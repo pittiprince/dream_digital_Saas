@@ -1,0 +1,41 @@
+@startuml
+' Use Case Diagram
+' ================
+left to right direction
+actor Customer as cust
+actor Creator as creat
+actor Admin as admin
+rectangle DreamDigital {
+  usecase "Browse Assets" as UC1
+  usecase "Search Assets" as UC2
+  usecase "View Asset Details" as UC3
+  usecase "Purchase Asset" as UC4
+  usecase "Manage Cart" as UC5
+  usecase "User Registration" as UC6
+  usecase "User Login" as UC7
+  usecase "User Profile" as UC8
+  usecase "Upload Asset" as UC9
+  usecase "Manage Assets" as UC10
+  usecase "Curate Content" as UC11
+  usecase "Manage Users" as UC12
+  usecase "View Analytics" as UC13
+  usecase "Subscribe" as UC14
+}
+
+cust --> UC1
+cust --> UC2
+cust --> UC3
+cust --> UC4
+cust --> UC5
+cust --> UC6
+cust --> UC7
+cust --> UC8
+cust --> UC14
+
+creat --> UC9
+creat --> UC10
+
+admin --> UC11
+admin --> UC12
+admin --> UC13
+@enduml

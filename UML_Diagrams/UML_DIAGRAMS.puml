@@ -1,0 +1,59 @@
+@startuml
+' Component Diagram for Dream Digital System
+' =========================================
+
+' Define components
+package "Frontend Application" {
+  [Web UI\nReact/Vite/TypeScript] as frontend
+  [Asset Browser] as assetBrowser
+  [Shopping Cart] as shoppingCart
+  [User Account] as userAccount
+  [Admin Dashboard] as adminDashboard
+}
+ 
+package "Backend API" {
+  [REST API\nNode.js/Express/TypeScript] as backend
+  [Asset Service] as assetService
+  [User Service] as userService
+  [Order Service] as orderService
+  [Subscription Service] as subscriptionService
+  [Payment Service] as paymentService
+  [Auth Service] as authService
+}
+
+package "Data Layer" {
+  [MongoDB\nPrimary Database] as mongodb
+  [Redis\nCache Layer] as redis
+  [Asset Storage\nCDN/S3] as assetStorage
+}
+
+package "External Services" {
+  [Payment Processor\nStripe] as stripe
+  [Email Service\nSendGrid/SMTP] as emailService
+  [File Virus Scanner] as virusScanner
+}
+
+' Relationships
+frontend --> backend : HTTP/REST
+frontend --> assetStorage : Direct Download
+backend --> mongodb : Database Access
+backend --> redis : Caching
+backend --> assetStorage : File Upload/Download
+backend --> stripe : Payment Processing
+backend --> emailService : Notification Delivery
+backend --> virusScanner : File Scanning
+assetService --> mongodb : Asset CRUD
+userService --> mongodb : User CRUD
+orderService --> mongodb : Order CRUD
+subscriptionService --> mongodb : Subscription CRUD
+authService --> mongodb : User Auth
+authService --> redis : Session Storage
+paymentService --> stripe : Payment Processing
+assetBrowser --> assetService : Asset Queries
+shoppingCart --> orderService : Cart Operations
+userAccount --> userService : Profile Management
+adminDashboard --> assetService : Content Management
+adminDashboard --> userService : User Management
+adminDashboard --> orderService : Order Management
+
+@enduml

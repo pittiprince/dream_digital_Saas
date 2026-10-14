@@ -1,0 +1,110 @@
+
+@startuml
+' Class Diagram for Core Entities
+' ===============================
+class User {
+  -ObjectId _id
+  -string email
+  -string passwordHash
+  -string firstName
+  -string lastName
+  -string role
+  -boolean isVerified
+  -Date emailVerifiedAt
+  -Date createdAt
+  -Date updatedAt
+  -Date lastLoginAt
+  -Subscription subscription
+  +register()
+  +login()
+  +updateProfile()
+  +verifyEmail()
+}
+
+class Asset {
+  -ObjectId _id
+  -ObjectId creatorId
+  -string title
+  -string description
+  -string category
+  -string[] tags
+  -number price
+  -string currency
+  -string fileUrl
+  -string[] previewUrls
+  -number fileSize
+  -object dimensions
+  -boolean isActive
+  -boolean isFeatured
+  -number downloadCount
+  -number purchaseCount
+  -number rating
+  -number ratingCount
+  -Date createdAt
+  -Date updatedAt
+  +upload()
+  +update()
+  +delete()
+  +purchase()
+}
+
+class Order {
+  -ObjectId _id
+  -ObjectId userId
+  -OrderItem[] items
+  -number subtotal
+  -number tax
+  -number total
+  -string currency
+  -string status
+  -string paymentId
+  -Date createdAt
+  -Date updatedAt
+  +calculateTotal()
+  +confirmPayment()
+}
+
+class OrderItem {
+  -ObjectId assetId
+  -number quantity
+  -number price
+  -string title
+}
+
+class Subscription {
+  -ObjectId _id
+  -ObjectId userId
+  -string planId
+  -string status
+  -Date currentPeriodStart
+  -Date currentPeriodEnd
+  -boolean cancelAtPeriodEnd
+  -Date createdAt
+  -Date updatedAt
+  +activate()
+  +cancel()
+  +renew()
+}
+
+class SubscriptionPlan {
+  -ObjectId _id
+  -string name
+  -string description
+  -number price
+  -string currency
+  -string interval
+  -string[] features
+  -boolean isActive
+  -Date createdAt
+  -Date updatedAt
+}
+
+' Relationships
+User "1" --> "*" Asset : creates
+User "1" --> "*" Order : places
+User "1" --> "0..1" Subscription : has
+SubscriptionPlan "1" --> "*" Subscription : defines
+Asset "*" --> "*" Order : contained in
+@enduml
+
+

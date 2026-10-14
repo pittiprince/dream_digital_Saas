@@ -1,0 +1,43 @@
+@startuml
+title Purchase Asset Sequence
+participant Customer as cust
+participant Frontend as fe
+participant Backend as be
+participant CartService as cart
+participant OrderService as order
+participant PaymentService as payment
+participant AssetDB as assetDb
+participant UserDB as userDb
+participant Stripe as stripe
+
+cust -> fe: Browse assets and add to cart
+fe -> be: POST /api/cart/items {assetId, quantity}
+be -> cart: Add item to cart
+cart -> assetDb: Validate asset exists and active
+assetDb -> cart: Asset details 
+cart -> be: Cart updated
+be -> fe: 200 OK {cart}
+
+loop Continue shopping
+    ... (repeat add to cart) ...
+end
+
+cust -> fe: Proceed to checkout
+fe -> be: POST /api/orders {cartItems, shippingInfo}
+be -> order: Create order from cart
+order -> userDb: Get user details
+userDb -> order: User info
+order -> assetDb: Validate assets and prices
+assetDb -> order: Asset details
+order -> be: Order created
+be -> payment: Process payment with Stripe
+payment -> stripe: Create payment intent
+stripe -> payment: Payment intent client secret
+payment -> be: Payment processed
+be -> order: Update order status to 'completed'
+order -> assetDb: Increment purchaseCount for assets
+assetDb -> order: Updated counts
+order -> be: Order confirmation
+be -> fe: 200 OK {orderId, confirmation}
+fe -> cust: Show confirmation page
+@enduml

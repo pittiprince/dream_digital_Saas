@@ -1,0 +1,37 @@
+@startuml
+title Upload Asset Sequence
+participant Creator as creat
+participant Frontend as fe
+participant Backend as be
+participant AssetService as assetSvc
+participant Storage as storage
+participant VirusScanner as scanner
+participant AssetDB as assetDb
+participant UserDB as userDb
+
+creat -> fe: Fill asset upload form (title, description, etc.)
+fe -> be: POST /api/assets {assetData, file}
+be -> assetSvc: Validate asset data and file
+assetSvc -> storage: Upload file to temporary location
+storage -> assetSvc: Upload success (tempUrl)
+assetSvc -> scanner: Scan file for viruses
+scanner -> assetSvc: Scan result (clean)
+alt File infected
+    scanner -> assetSvc: Virus detected
+    assetSvc -> be: Upload failed
+    be -> fe: 400 Bad Request (infected file)
+    fe -> creat: Show error
+else File clean
+    assetSvc -> assetDb: Create asset record
+    assetDb -> assetSvc: Asset created (assetId)
+    assetSvc -> storage: Move file to permanent location
+    storage -> assetSvc: Move success (permanentUrl)
+    assetSvc -> assetDb: Update asset with permanentUrl
+    assetDb -> assetSvc: Updated
+    assetSvc -> userDb: Increment creator's asset count
+    userDb -> assetSvc: Updated
+    assetSvc -> be: Upload successful
+    be -> fe: 201 Created {assetId, assetUrl}
+    fe -> creat: Show success message
+end
+@enduml

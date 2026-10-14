@@ -1,0 +1,33 @@
+@startuml
+title User Login Sequence
+participant Customer as cust
+participant Frontend as fe
+participant Backend as be
+participant AuthService as auth
+participant UserDB as db
+participant Redis as cache
+
+cust -> fe: Enter credentials (email, password)
+fe -> be: POST /api/login {email, password}
+be -> auth: Validate credentials
+auth -> db: Find user by email
+alt User not found
+    db -> auth: null
+    auth -> be: Authentication failed
+    be -> fe: 401 Unauthorized
+else User found
+    db -> auth: User document
+    auth -> bcrypt: Compare password
+    alt Password incorrect
+        bcrypt -> auth: false
+        auth -> be: Authentication failed
+        be -> fe: 401 Unauthorized
+    else Password correct
+        bcrypt -> auth: true
+        auth -> redis: Store session (userId, token)
+        auth -> be: Auth success (userId, accessToken, refreshToken)
+        be -> fe: 200 OK {accessToken, refreshToken}
+        fe -> cust: Redirect to dashboard
+    end
+end
+@enduml
